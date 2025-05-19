@@ -180,6 +180,7 @@ dependencies = [
     { name = "numpy" },
     { name = "openpyxl" },
     { name = "pandas" },
+    { name = "prophet" },
     { name = "scipy" },
     { name = "seaborn" },
     { name = "setuptools" },
@@ -193,10 +194,26 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.1.3" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=2.2.3" },
+    { name = "prophet", specifier = ">=1.1.6" },
     { name = "scipy", specifier = ">=1.15.3" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "setuptools", specifier = ">=80.7.1" },
     { name = "ydata-profiling", specifier = ">=4.16.1" },
+]
+
+[[package]]
+name = "cmdstanpy"
+version = "1.2.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "stanio" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ca/d7/0bd9a70cf49007eb87a6fbb9b09f52ec741414b39113bcb588df55c64320/cmdstanpy-1.2.5.tar.gz", hash = "sha256:53314e934ac63d894affb36263ac062b1e0e483c368a7b691087726803917b3b", size = 114278 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/80/04b3989f055e555737b3b6944f02112e90cfc4f2e53c763771dded22e684/cmdstanpy-1.2.5-py3-none-any.whl", hash = "sha256:90ae8781d80efbc62962b91974deb6033ee2f0696324eacde7188d837c36c47c", size = 94497 },
 ]
 
 [[package]]
@@ -411,6 +428,18 @@ wheels = [
 ]
 
 [[package]]
+name = "holidays"
+version = "0.73"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/46/48/6d0ef4f014d06cde97772f5cc6bf9befdfbd5b23050014de163a5e8e6848/holidays-0.73.tar.gz", hash = "sha256:36fd6ac8c340658bed0b3cc4e0b476b3726ff0c8f2cd384f4a1adbbfc9d0cef2", size = 599529 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/65/9c/01da17421bd6a0aa230839b8313fa1615c81555f94954350fca4f4b7f129/holidays-0.73-py3-none-any.whl", hash = "sha256:2baec1a0e66d89777a824be616141f9aff75fc90d9efeb2e10281bdeb2f5b965", size = 954803 },
+]
+
+[[package]]
 name = "htmlmin"
 version = "0.1.12"
 source = { registry = "https://pypi.org/simple" }
@@ -438,6 +467,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6c/f4/9821fe373a4788bca43f00491b008f930de0b12a60ff631852d1f984b966/ImageHash-4.3.1.tar.gz", hash = "sha256:7038d1b7f9e0585beb3dd8c0a956f02b95a346c0b5f24a9e8cc03ebadaf0aa70", size = 296989 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2d/b4/19a746a986c6e38595fa5947c028b1b8e287773dcad766e648897ad2a4cf/ImageHash-4.3.1-py2.py3-none-any.whl", hash = "sha256:5ad9a5cde14fe255745a8245677293ac0d67f09c330986a351f34b614ba62fb5", size = 296543 },
+]
+
+[[package]]
+name = "importlib-resources"
+version = "6.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/8c/f834fbf984f691b4f7ff60f50b514cc3de5cc08abfc3295564dd89c5e2e7/importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c", size = 44693 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec", size = 37461 },
 ]
 
 [[package]]
@@ -1177,6 +1215,28 @@ wheels = [
 ]
 
 [[package]]
+name = "prophet"
+version = "1.1.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cmdstanpy" },
+    { name = "holidays" },
+    { name = "importlib-resources" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/03/ff/eb5640b4c17d8254d823253fe123a3c6f5a885854e83e29f899c392356c9/prophet-1.1.6.tar.gz", hash = "sha256:92238aa584da69abe5c43e9426e6a4176064465e8424196655915ff86316a680", size = 65524 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/41/46/75309abde08c10f9be78bcfca581be430b5d8303d847de8d88190f4d5c21/prophet-1.1.6-py3-none-macosx_10_11_x86_64.whl", hash = "sha256:f4bd565e6ff5f04d74dbf338c99d0aa353e00849c522f6e6663fdaf026bd0b46", size = 8845463 },
+    { url = "https://files.pythonhosted.org/packages/15/9a/a8d35652e869011a3bae9e0888f4c62157bf9067c9be15535602c73039dd/prophet-1.1.6-py3-none-macosx_11_0_arm64.whl", hash = "sha256:29f69a98dbb4b96580decf773034b18639009c13c2f67c59a7e59a6eb2b92b0e", size = 8238419 },
+    { url = "https://files.pythonhosted.org/packages/a1/c5/c6dd58b132653af3139c87e92b484bad79264492a62d70fc5beda837a933/prophet-1.1.6-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c0bdf573b1d89b0c0e3dc09778816a35dece000f195b2f032ff0ff8076ae0d6a", size = 14656227 },
+    { url = "https://files.pythonhosted.org/packages/1f/47/f7d10a904756830efd8522700e582822ff44a15f839b464044ee4c53ee36/prophet-1.1.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5860990c7a6da33a4381a6adab1b35f7d2ed465eeeb364c3b0f663ff69a78eca", size = 14381384 },
+    { url = "https://files.pythonhosted.org/packages/12/ff/a04156f4ca3d18bd005c73f79e86e0684346fbc2aea856429c3e49f2828e/prophet-1.1.6-py3-none-win_amd64.whl", hash = "sha256:222ec247e60e0e62fa42572bba27bd82590c7f5225f36b41a3d1762ae2ed96fd", size = 13327596 },
+]
+
+[[package]]
 name = "psutil"
 version = "7.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1667,6 +1727,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521 },
+]
+
+[[package]]
+name = "stanio"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2c/5b/6e376499c3f9d71e4154b031d059663598534dd038f421e8c643d61afec5/stanio-0.5.1.tar.gz", hash = "sha256:348d52f947dec431e118f4b601c4c5296929b86401d4d4dd5aa9373b0d4ae4ac", size = 11983 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/56/87/37a80e4d5bd453c33262d8fb618b6840fd98d24ed08e046a4a9b10177fa3/stanio-0.5.1-py3-none-any.whl", hash = "sha256:99ad590daa5834681245c2b651716ec2e06223853661ada21430c621521c849f", size = 8065 },
 ]
 
 [[package]]
