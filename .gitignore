@@ -1,4 +1,6 @@
-\.venv
+/.venv
 *.csv
 *.xlsx
 *.zip
+src/loadmlflow/mlartifacts
+src/loadmlflow/mlruns
