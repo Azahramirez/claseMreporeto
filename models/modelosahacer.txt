@@ -1,0 +1,6 @@
+1. Ocupacion tabla reservaciones
+2. Ocupacion tabla ocupaciones
+3. Ocupacion por divisa nacional tabla ocupaciones
+4. Ocupacion por divisa internacional tabla ocupaciones
+5. Ing_hab tabla ocupaciones
+6. Tipo habitaciones # JR
