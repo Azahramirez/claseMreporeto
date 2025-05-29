@@ -1,5 +1,5 @@
 1. Ocupacion tabla reservaciones #LISTO
-2. Ocupacion tabla ocupaciones
-3. Modelos de  num_adultos por cada top 5 estados que reservan
-5. Ing_hab tabla ocupaciones
-6. Tipo habitaciones # JR
+2. Ocupacion tabla ocupaciones # LISTO
+3. Ing_hab tabla ocupaciones #LISTO
+4. Modelos de  num_adultos por cada top 5 estados que reservan # LISTO 1 estado (faltan 4)
+5. Tipo habitaciones # JR
