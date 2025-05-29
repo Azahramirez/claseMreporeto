@@ -4,14 +4,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 st.set_page_config(page_title="Mega Dashboard Hotel", layout="wide")
-
 st.title("Mega Dashboard Hotel: Menús Interactivos")
+
+@st.cache
+def load_data(file_path):
+    return pd.read_csv(file_path)
+
 
 menu = st.sidebar.selectbox("Selecciona el menú:", ["Menu 1", "Menu 2", "Menu 3"])
 
 if menu == "Menu 1":
     st.markdown("### Temática: Reservaciones y Ocupación General")
-    df = pd.read_excel('ia_reservaciones_expandida_limpia (2).xlsx')
+    df = pd.read_excel('ia_reservaciones_expandida_limpia.xlsx')
     df['ID_Tipo_Habitacion'] = df['ID_Tipo_Habitacion'].replace({0: 'Otro'})
     df['ID_canal'] = df['ID_canal'].replace({0: 'Otro'})
     df['ID_estatus_reservaciones'] = df['ID_estatus_reservaciones'].replace({0: 'Otro'})
@@ -44,7 +48,7 @@ if menu == "Menu 1":
 
 elif menu == "Menu 2":
     st.markdown("### Temática: Métricas Financieras y Desempeño Empresarial")
-    df = pd.read_excel('ocupaciones_time_series_by_empresa (1).xlsx')
+    df = pd.read_excel('ocupaciones_time_series_by_empresa.xlsx')
     if pd.api.types.is_numeric_dtype(df['Fecha_hoy']):
         df['Fecha_hoy'] = pd.to_datetime('1899-12-30') + pd.to_timedelta(df['Fecha_hoy'], unit='D')
 
@@ -73,7 +77,7 @@ elif menu == "Menu 2":
 
 elif menu == "Menu 3":
     st.markdown("### Temática: Dinámicas por Tipo de Habitación")
-    df = pd.read_excel('reservaciones_time_series_by_room_type (1).xlsx')
+    df = pd.read_excel('reservaciones_time_series_by_room_type.xlsx')
     if pd.api.types.is_numeric_dtype(df['fecha_ocupacion']):
         df['fecha_ocupacion'] = pd.to_datetime('1899-12-30') + pd.to_timedelta(df['fecha_ocupacion'], unit='D')
 
