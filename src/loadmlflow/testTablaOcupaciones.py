@@ -29,14 +29,23 @@ mlflow.autolog(disable=True)  # we'll log manually
 
 # ✅ Load data
 print("Leyendo ..")
-reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("Fecha_hoy", ascending=True)
+reservaciones = pd.read_excel("data/ocupaciones_time_seriesN.xlsx").sort_values("Fecha_hoy", ascending=True)
 print("Leyendo .. Hecho")
 
-# ✅ Format data
-df = reservaciones[['fecha_ocupacion', 'tasa_ocupacion']]
+# ================================================================
+# En esta parte cambia la segunda columna dependiendo del modelo
+# ================================================================
+# Para prophet_modelTocu.pkl: df = reservaciones[['Fecha_hoy', 'tasa_ocupacion']]
+# Para prophet_modelInghab.pkl: df = reservaciones[['Fecha_hoy', 'ing_hab']]
+
+# Revisar esto!!!!!
+
+path_model = "models/prophet_modelInghab.pkl"  # Cambiar el nombre dependiendo del modelo
+save_model_as= "TOcupacion_Inghab"  # Como se guardará el modelo en MLflow
+
+df = reservaciones[['Fecha_hoy', 'ing_hab']]
 df.columns = ['ds', 'y']
 df['ds'] = pd.to_datetime(df['ds'])
-# Quitar valores atípicos
 df= df[df['ds'] < '2023-01-01']
 df['cap'] = 1.0
 df['floor'] = 0.0
@@ -61,7 +70,7 @@ params = {
         'lower_window': -2,
         'upper_window': 2
     },
-    'growth': 'logistic'
+    'growth': 'linear'
 }
 
 # ✅ Split data
@@ -74,7 +83,7 @@ model = Prophet(growth=params['growth'], holidays=pd.DataFrame(params['mexican_h
 model.fit(train)
 
 # ✅ Save model locally (required for MLflow)
-joblib.dump(model, "prophet_model.pkl")
+joblib.dump(model, path_model)
 
 # ✅ Predict
 future = test[['ds']].copy()
@@ -89,10 +98,10 @@ residuals = y_true - y_pred
 rmse = mean_squared_error(y_true, y_pred)** 0.5
 mean_absolute_percent_error = round(np.mean(abs(residuals / y_true)), 4)
 r2_score_value = r2_score(y_true, y_pred)
-print('R2 Score:', r2_score_value)
 
 print('Root Mean Squared Error (RMSE):', rmse)
 print('Mean Absolute Percent Error:', mean_absolute_percent_error)
+print('R2 Score:', r2_score_value)
 
 # ✅ Log model and metrics to MLflow
 with mlflow.start_run():
@@ -107,7 +116,8 @@ with mlflow.start_run():
     mlflow.pyfunc.log_model(
         artifact_path="model",
         python_model=ProphetWrapper(),
-        artifacts={"model_path": "prophet_model.pkl"},
-        registered_model_name="TR_ocupacion",
+        artifacts={"model_path": path_model},
+        # Cambiar el nombre dependiendo del modelo
+        registered_model_name=save_model_as,
         signature=infer_signature(future, forecast)
     )
