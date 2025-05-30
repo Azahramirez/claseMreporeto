@@ -35,8 +35,7 @@ print("Leyendo .. Hecho")
 # ================================================================
 # En esta parte cambia la segunda columna dependiendo del modelo
 # ================================================================
-# Para prophet_modelTocu.pkl: df = reservaciones[['Fecha_hoy', 'tasa_ocupacion']]
-# Para prophet_modelInghab.pkl: df = reservaciones[['Fecha_hoy', 'ing_hab']]
+
 
 # Revisar esto!!!!!
 num_edo='294'
