@@ -38,7 +38,7 @@ print("Leyendo .. Hecho")
 
 
 # Revisar esto!!!!!
-num_edo='294'
+num_edo='253'
 path_model = f"models/prophet_model_num_adu_{num_edo}.pkl"  # Cambiar el nombre dependiendo del modelo
 save_model_as= f"TOcupacion_NumAdu{num_edo}"  # Como se guardará el modelo en MLflow
 

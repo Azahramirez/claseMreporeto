@@ -29,7 +29,7 @@ mlflow.autolog(disable=True)  # we'll log manually
 
 # ✅ Load data
 print("Leyendo ..")
-reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("Fecha_hoy", ascending=True)
+reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("fecha_ocupacion", ascending=True)
 print("Leyendo .. Hecho")
 
 # ✅ Format data
@@ -37,7 +37,7 @@ df = reservaciones[['fecha_ocupacion', 'tasa_ocupacion']]
 df.columns = ['ds', 'y']
 df['ds'] = pd.to_datetime(df['ds'])
 # Quitar valores atípicos
-df= df[df['ds'] < '2023-01-01']
+df = df[df['ds'] < '2023-01-01']
 df['cap'] = 1.0
 df['floor'] = 0.0
 

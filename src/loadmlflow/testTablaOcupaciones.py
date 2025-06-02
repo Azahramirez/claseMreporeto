@@ -13,8 +13,6 @@ from mlflow.models.signature import infer_signature
 # ✅ STEP 1: Define a custom MLflow wrapper for Prophet
 class ProphetWrapper(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
-        import joblib
-        from prophet import Prophet
         self.model = joblib.load(context.artifacts["model_path"])
 
     def predict(self, context, model_input):
@@ -40,15 +38,20 @@ print("Leyendo .. Hecho")
 
 # Revisar esto!!!!!
 
-path_model = "models/prophet_modelInghab.pkl"  # Cambiar el nombre dependiendo del modelo
-save_model_as= "TOcupacion_Inghab"  # Como se guardará el modelo en MLflow
+path_model = "models/prophet_modelTocu.pkl"  # Cambiar el nombre dependiendo del modelo
+save_model_as= "TOcupacion_Tocu"  # Como se guardará el modelo en MLflow
 
-df = reservaciones[['Fecha_hoy', 'ing_hab']]
+
+cap = 1.0
+floor = 0.0
+growth = 'logistic'
+
+df = reservaciones[['Fecha_hoy', 'tasa_ocupacion']]
 df.columns = ['ds', 'y']
 df['ds'] = pd.to_datetime(df['ds'])
 df= df[df['ds'] < '2023-01-01']
-df['cap'] = 1.0
-df['floor'] = 0.0
+df['cap'] = cap
+df['floor'] = floor
 
 # ✅ Holidays and parameters
 params = {
@@ -70,7 +73,7 @@ params = {
         'lower_window': -2,
         'upper_window': 2
     },
-    'growth': 'linear'
+    'growth': growth
 }
 
 # ✅ Split data
@@ -86,9 +89,10 @@ model.fit(train)
 joblib.dump(model, path_model)
 
 # ✅ Predict
+
 future = test[['ds']].copy()
-future['cap'] = 1.0
-future['floor'] = 0.0
+future['cap'] =  cap
+future['floor'] = floor
 forecast = model.predict(future)
 
 # ✅ Evaluate
