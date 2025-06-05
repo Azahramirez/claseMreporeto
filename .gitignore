@@ -6,3 +6,4 @@ src/loadmlflow/mlartifacts
 src/loadmlflow/mlruns
 mlartifacts/
 mlruns/
+*.env
