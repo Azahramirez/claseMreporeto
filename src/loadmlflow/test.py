@@ -10,6 +10,12 @@ import mlflow
 import mlflow.pyfunc
 from mlflow.models.signature import infer_signature
 
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
 # ✅ STEP 1: Define a custom MLflow wrapper for Prophet
 class ProphetWrapper(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
@@ -21,7 +27,7 @@ class ProphetWrapper(mlflow.pyfunc.PythonModel):
         return self.model.predict(model_input)
 
 # ✅ MLflow setup
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 mlflow.set_experiment("Time Series Forecasting with Prophet: Tabla de Reservaciones")
 
 # Optional: autolog params/metrics
@@ -29,7 +35,7 @@ mlflow.autolog(disable=True)  # we'll log manually
 
 # ✅ Load data
 print("Leyendo ..")
-reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("Fecha_hoy", ascending=True)
+reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("fecha_ocupacion", ascending=True)
 print("Leyendo .. Hecho")
 
 # ✅ Format data

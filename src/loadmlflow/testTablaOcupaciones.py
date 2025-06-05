@@ -47,6 +47,7 @@ df = reservaciones[['Fecha_hoy', 'ing_hab']]
 df.columns = ['ds', 'y']
 df['ds'] = pd.to_datetime(df['ds'])
 df= df[df['ds'] < '2023-01-01']
+# 
 df['cap'] = 1.0
 df['floor'] = 0.0
 
