@@ -7,3 +7,7 @@ src/loadmlflow/mlruns
 mlartifacts/
 mlruns/
 *.env
+
+__pycache__
+.DS_Store
+*.pkl

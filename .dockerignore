@@ -1,0 +1,8 @@
+src/mlartifacts
+src/mlruns
+*.csv
+__pycache__
+*.pkl
+*.txt
+*.md
+*.xlsx

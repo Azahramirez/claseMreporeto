@@ -1,54 +1,88 @@
 import pandas as pd
-from prophet import Prophet
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import r2_score
-import joblib
-import datetime
 import numpy as np
+import joblib
+from prophet import Prophet
+from sklearn.metrics import mean_squared_error, r2_score
 import mlflow
 import mlflow.pyfunc
 from mlflow.models.signature import infer_signature
 
-from dotenv import load_dotenv
-import os
-
-# Load environment variables from .env file
-load_dotenv()
-
-# ✅ STEP 1: Define a custom MLflow wrapper for Prophet
 class ProphetWrapper(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
-        import joblib
-        from prophet import Prophet
         self.model = joblib.load(context.artifacts["model_path"])
-
+    
     def predict(self, context, model_input):
         return self.model.predict(model_input)
 
-# ✅ MLflow setup
-mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
-mlflow.set_experiment("Time Series Forecasting with Prophet: Tabla de Reservaciones")
+def run_prophet_forecasting(
+    dataset_path: str,
+    date_col: str,
+    target_col: str,
+    registered_model_name: str,
+    experiment_name: str,
+    growth_type: str = "logistic",
+    holidays_df: pd.DataFrame = None,
+    forecast_cutoff: str = "2023-01-01"
+):
+    # ✅ MLflow setup
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_experiment(experiment_name)
 
-# Optional: autolog params/metrics
-mlflow.autolog(disable=True)  # we'll log manually
+    # ✅ Load and clean data
+    df = pd.read_excel(dataset_path).sort_values(date_col, ascending=True)
+    df = df[[date_col, target_col]].rename(columns={date_col: 'ds', target_col: 'y'})
+    df['ds'] = pd.to_datetime(df['ds'])
+    df = df[df['ds'] < forecast_cutoff]
+    df['cap'] = 1.0
+    df['floor'] = 0.0
 
-# ✅ Load data
-print("Leyendo ..")
-reservaciones = pd.read_excel("data/reservaciones_time_series.xlsx").sort_values("fecha_ocupacion", ascending=True)
-print("Leyendo .. Hecho")
+    # ✅ Train/test split
+    split_index = int(len(df) * 0.8)
+    train = df.iloc[:split_index]
+    test = df.iloc[split_index:]
 
-# ✅ Format data
-df = reservaciones[['fecha_ocupacion', 'tasa_ocupacion']]
-df.columns = ['ds', 'y']
-df['ds'] = pd.to_datetime(df['ds'])
-# Quitar valores atípicos
-df= df[df['ds'] < '2023-01-01']
-df['cap'] = 1.0
-df['floor'] = 0.0
+    # ✅ Model
+    model = Prophet(growth=growth_type, holidays=holidays_df)
+    model.fit(train)
 
-# ✅ Holidays and parameters
-params = {
+    # ✅ Prediction
+    future = test[['ds']].copy()
+    future['cap'] = 1.0
+    future['floor'] = 0.0
+    forecast = model.predict(future)
+
+    # ✅ Metrics
+    y_true = test['y'].values
+    y_pred = forecast['yhat'].values
+    residuals = y_true - y_pred
+    rmse = mean_squared_error(y_true, y_pred) ** 0.5
+    mape = np.mean(np.abs(residuals / y_true))
+    r2 = r2_score(y_true, y_pred)
+
+    # ✅ Save model
+    joblib.dump(model, "prophet_model.pkl")
+
+    # ✅ Log to MLflow
+    with mlflow.start_run():
+        mlflow.log_param("growth", growth_type)
+        mlflow.log_param("holiday_count", len(holidays_df) if holidays_df is not None else 0)
+        mlflow.log_metric("rmse", rmse)
+        mlflow.log_metric("mape", mape)
+        mlflow.log_metric("r2_score", r2)
+
+        mlflow.pyfunc.log_model(
+            artifact_path="model",
+            python_model=ProphetWrapper(),
+            artifacts={"model_path": "prophet_model.pkl"},
+            registered_model_name=registered_model_name,
+            signature=infer_signature(future, forecast)
+        )
+
+    print("\n✅ Forecasting complete.")
+
+if __name__ == "__main__":
+
+    params = params = {
     'mexican_holidays': {
         'holiday': [
             'New Year\'s Day', 'Constitution Day', 'Benito Juárez Day',
@@ -70,50 +104,14 @@ params = {
     'growth': 'logistic'
 }
 
-# ✅ Split data
-train_size = int(len(df) * 0.8)
-train = df.iloc[:train_size]
-test = df.iloc[train_size:]
-
-# ✅ Train model
-model = Prophet(growth=params['growth'], holidays=pd.DataFrame(params['mexican_holidays']))
-model.fit(train)
-
-# ✅ Save model locally (required for MLflow)
-joblib.dump(model, "prophet_model.pkl")
-
-# ✅ Predict
-future = test[['ds']].copy()
-future['cap'] = 1.0
-future['floor'] = 0.0
-forecast = model.predict(future)
-
-# ✅ Evaluate
-y_true = test['y'].values
-y_pred = forecast['yhat'].values
-residuals = y_true - y_pred
-rmse = mean_squared_error(y_true, y_pred)** 0.5
-mean_absolute_percent_error = round(np.mean(abs(residuals / y_true)), 4)
-r2_score_value = r2_score(y_true, y_pred)
-print('R2 Score:', r2_score_value)
-
-print('Root Mean Squared Error (RMSE):', rmse)
-print('Mean Absolute Percent Error:', mean_absolute_percent_error)
-
-# ✅ Log model and metrics to MLflow
-with mlflow.start_run():
-
-    mlflow.log_param("growth", params["growth"])
-    mlflow.log_param("mexican_holidays_count", len(params["mexican_holidays"]["ds"]))
-    mlflow.log_metric("rmse", rmse)
-    mlflow.log_metric("mean_absolute_percent_error", mean_absolute_percent_error)
-    mlflow.log_metric("r2_score", r2_score_value)
-
-    # Log the model as a custom PythonModel
-    mlflow.pyfunc.log_model(
-        artifact_path="model",
-        python_model=ProphetWrapper(),
-        artifacts={"model_path": "prophet_model.pkl"},
-        registered_model_name="TR_ocupacion",
-        signature=infer_signature(future, forecast)
-    )
+    run_prophet_forecasting(
+        dataset_path="data/reservaciones_time_series.xlsx"
+        ,date_col="fecha_ocupacion",
+          target_col="tasa_ocupacion",
+          registered_model_name="TR_ocupacion",
+          experiment_name="Prophet Occupation Forecasting Time Series Reservations",
+            growth_type="logistic",
+            holidays_df = pd.DataFrame(params['mexican_holidays']),
+            forecast_cutoff="2023-01-01"
+          ) 
+    
