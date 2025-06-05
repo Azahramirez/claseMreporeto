@@ -1,5 +1,9 @@
 import streamlit as st
 import requests 
+import pandas as pd 
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 
 
@@ -56,4 +60,50 @@ elif prediction.status_code == 400:
     st.error("Invalid input data. Please check the date range and try again.")
 
 
+
+### Plot the predictions 
+if prediction.status_code == 200:
+    df = pd.DataFrame(prediction_data)
+    df['ds'] = pd.to_datetime(df['ds'])
+    
+    fig = go.Figure()
+
+# Add the lower bound first
+    fig.add_trace(go.Scatter(
+    x=df['ds'],
+    y=df['yhat_lower'],
+    mode='lines',
+    line=dict(width=0),
+    name='Lower Bound',
+    showlegend=False
+))
+
+# Add the upper bound and fill to the previous trace
+    fig.add_trace(go.Scatter(
+    x=df['ds'],
+    y=df['yhat_upper'],
+    mode='lines',
+    fill='tonexty',
+    fillcolor='rgba(176,224,230,0.2)',  # adjust color and opacity
+    line=dict(width=0),
+    name='Confidence Interval'
+))
+
+
+    fig.add_trace(go.Scatter(
+    x=df['ds'],
+    y=df['yhat'],
+    mode='lines',
+    name='Predicted Occupancy Rates',
+    line=dict(color='red')
+))
+
+# Customize layout
+    fig.update_layout(title='Predicted Values',
+                  xaxis_title='Date',
+                  yaxis_title='Occupancy Rate',
+                  template='plotly_white')
+
+# Show plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
