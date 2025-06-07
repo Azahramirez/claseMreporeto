@@ -3,6 +3,11 @@ import joblib
 import pandas as pd
 from pydantic import BaseModel
 import mlflow
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 class ProphetOccupationRequest(BaseModel):
     """
@@ -19,7 +24,7 @@ class ProphetOccupationRequest(BaseModel):
 app = FastAPI()
 
 # On windows, you may need to use the localhost instead of 127.0.0.1
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 
 
 
