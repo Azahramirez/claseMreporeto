@@ -6,10 +6,21 @@ from sklearn.metrics import mean_squared_error, r2_score
 import mlflow
 import mlflow.pyfunc
 from mlflow.models.signature import infer_signature
+from pathlib import Path
+
+
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 class ProphetWrapper(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
-        self.model = joblib.load(context.artifacts["model_path"])
+        model_path = Path(context.artifacts["model_path"])
+        self.model = joblib.load(model_path)
+        
+
     
     def predict(self, context, model_input):
         return self.model.predict(model_input)
@@ -25,15 +36,16 @@ def run_prophet_forecasting(
     forecast_cutoff: str = "2023-01-01"
 ):
     # ✅ MLflow setup
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
     mlflow.set_experiment(experiment_name)
 
     # ✅ Load and clean data
     df = pd.read_excel(dataset_path).sort_values(date_col, ascending=True)
+    print(df.columns)
     df = df[[date_col, target_col]].rename(columns={date_col: 'ds', target_col: 'y'})
     df['ds'] = pd.to_datetime(df['ds'])
     df = df[df['ds'] < forecast_cutoff]
-    df['cap'] = 1.0
+    df['cap'] = 4000000000.0
     df['floor'] = 0.0
 
     # ✅ Train/test split
@@ -47,7 +59,7 @@ def run_prophet_forecasting(
 
     # ✅ Prediction
     future = test[['ds']].copy()
-    future['cap'] = 1.0
+    future['cap'] = 4000000000.0
     future['floor'] = 0.0
     forecast = model.predict(future)
 
@@ -101,16 +113,16 @@ if __name__ == "__main__":
         'lower_window': -2,
         'upper_window': 2
     },
-    'growth': 'logistic'
+    'growth': "linear"
 }
 
     run_prophet_forecasting(
-        dataset_path="data/reservaciones_time_series.xlsx"
-        ,date_col="fecha_ocupacion",
-          target_col="tasa_ocupacion",
-          registered_model_name="TR_ocupacion",
+        dataset_path="data/ocupaciones_time_seriesN.xlsx"
+        ,date_col="Fecha_hoy",
+          target_col="ing_hab",
+          registered_model_name="IngHab",
           experiment_name="Prophet Occupation Forecasting Time Series Reservations",
-            growth_type="logistic",
+            growth_type="linear",
             holidays_df = pd.DataFrame(params['mexican_holidays']),
             forecast_cutoff="2023-01-01"
           ) 
