@@ -87,6 +87,3 @@ Se muestran los modelos en formato .pkl
 
 
 
-
-
-
